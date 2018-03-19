@@ -1,4 +1,4 @@
-name 'preconf_jenkins'
+name 'preconfjenkins'
 maintainer 'prabhu kanakamedala'
 maintainer_email 'prabhukanakamedala@gmail.com'
 license 'All Rights Reserved'
