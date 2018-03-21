@@ -10,35 +10,59 @@
 
 docker_installation 'default'
 
-docker_service 'docker' do
-action [:start]
+docker_service_manager 'default' do
+  action :start
 end
 
-# service 'docker' do
-#   action [:start, :enable]
-# end
+directory '/root/workspace/jenkinsdocker' do
 
-
-
-# docker_service 'docker' do
-#   # host [ "tcp://#{node['ipaddress']}:2376", 'unix:///var/run/docker.sock' ]
-#   # tls_verify true
-#   # tls_ca_cert '/path/to/ca.pem'
-#   # tls_server_cert '/path/to/server.pem'
-#   # tls_server_key '/path/to/server-key.pem'
-#   # tls_client_cert '/path/to/client.pem'
-#   # tls_client_key '/path/to/client-key.pem'
-#   action [:create, :start]
-# end
-
-cookbook_file '/root/workspace/Dockerfile' do
-  source 'jenkinsdocker/Dockerfile'
 end
 
-# remote_file '/root/workspace/Jenkinsfile' do
-#        source 'jenkinsdocker/Jenkinsfile'
-#       action :create
-#    end
+['Dockerfile', 'tini_pub.gpg','init.groovy', 'jenkins-support','jenkins.sh', 'tini-shim.sh','plugins.sh','install-plugins.sh'].each do |file|
+  cookbook_file "/root/workspace/jenkinsdocker/#{file}" do
+    source "jenkinsdocker/#{file}"
+    mode "0644"
+  end
+end
+
+
+# cookbook_file '/root/workspace/Dockerfile' do
+#   source 'jenkinsdocker/Dockerfile'
+# end
+#
+# cookbook_file '/root/workspace/tini_pub.gpg' do
+#   source 'jenkinsdocker/tini_pub.gpg'
+# end
+#
+# cookbook_file '/root/workspace/init.groovy' do
+#   source 'jenkinsdocker/init.groovy'
+# end
+#
+# cookbook_file '/root/workspace/jenkins-support' do
+#   source 'jenkinsdocker/jenkins-support'
+# end
+#
+# cookbook_file '/root/workspace/jenkins.sh' do
+#   source 'jenkinsdocker/jenkins.sh'
+# end
+#
+# cookbook_file '/root/workspace/tini-shim.sh' do
+#   source 'jenkinsdocker/tini-shim.sh'
+# end
+#
+# cookbook_file '/root/workspace/plugins.sh' do
+#   source 'jenkinsdocker/plugins.sh'
+# end
+#
+# cookbook_file '/root/workspace/install-plugins.sh' do
+#   source 'jenkinsdocker/install-plugins.sh'
+# end
+
+docker_image 'centos_jenkins' do
+  tag 'latest'
+  source '/root/workspace/jenkinsdocker/'
+  action :build_if_missing
+end
 
 # docker_container 'masterjenkins' do
 #   repo 'centos_jenkins'
@@ -50,7 +74,7 @@ end
 #   action :run
 # end
 
-git '/root/worspace/' do
+git '/root/workspace/docker' do
   repository 'https://github.com/jenkinsci/docker.git'
   revision 'master'
   action :sync
